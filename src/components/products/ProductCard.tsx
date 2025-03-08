@@ -1,21 +1,12 @@
-
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, ShoppingCart, Leaf } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import { useCart } from '@/contexts/CartContext';
+import { Product } from '@/lib/api';
 
 interface ProductProps {
-  product: {
-    id: number;
-    title: string;
-    price: number;
-    image: string;
-    category: string;
-    isEco?: boolean;
-    rating?: number;
-    description?: string;
-  };
+  product: Product;
 }
 
 const ProductCard = ({ product }: ProductProps) => {

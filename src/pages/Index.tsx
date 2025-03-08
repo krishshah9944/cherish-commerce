@@ -1,4 +1,3 @@
-
 import React, { useState } from 'react';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
@@ -7,7 +6,7 @@ import FeaturedProducts from '../components/home/FeaturedProducts';
 import CartDrawer from '../components/cart/CartDrawer';
 import AuthModal from '../components/auth/AuthModal';
 import { ShoppingBag, Star, Users, Leaf, ArrowRight } from 'lucide-react';
-import Button from '../components/ui/Button';
+import { Button } from '../components/ui/button';
 
 interface IndexProps {
   user?: any;
@@ -17,7 +16,6 @@ const Index = ({ user }: IndexProps) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   
-  // Open cart when clicking cart icon in navbar
   React.useEffect(() => {
     const handleCartClick = () => {
       setIsCartOpen(true);
@@ -34,7 +32,6 @@ const Index = ({ user }: IndexProps) => {
     };
   }, []);
   
-  // Open auth modal when clicking account icon
   React.useEffect(() => {
     const handleAccountClick = () => {
       if (!user) {
@@ -58,13 +55,10 @@ const Index = ({ user }: IndexProps) => {
       <Navbar />
       
       <main>
-        {/* Hero Section */}
         <Hero />
         
-        {/* Featured Products Section */}
         <FeaturedProducts />
         
-        {/* Key Features Section */}
         <section className="py-20">
           <div className="container-custom">
             <div className="text-center max-w-3xl mx-auto mb-16">
@@ -76,7 +70,6 @@ const Index = ({ user }: IndexProps) => {
             </div>
             
             <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-8">
-              {/* Feature 1 */}
               <div className="bg-white p-6 rounded-2xl shadow-card flex flex-col items-center text-center animate-fade-in" style={{ animationDelay: "0.1s" }}>
                 <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-5">
                   <ShoppingBag size={24} />
@@ -87,7 +80,6 @@ const Index = ({ user }: IndexProps) => {
                 </p>
               </div>
               
-              {/* Feature 2 */}
               <div className="bg-white p-6 rounded-2xl shadow-card flex flex-col items-center text-center animate-fade-in" style={{ animationDelay: "0.2s" }}>
                 <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-5">
                   <Star size={24} />
@@ -98,7 +90,6 @@ const Index = ({ user }: IndexProps) => {
                 </p>
               </div>
               
-              {/* Feature 3 */}
               <div className="bg-white p-6 rounded-2xl shadow-card flex flex-col items-center text-center animate-fade-in" style={{ animationDelay: "0.3s" }}>
                 <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-5">
                   <Users size={24} />
@@ -109,7 +100,6 @@ const Index = ({ user }: IndexProps) => {
                 </p>
               </div>
               
-              {/* Feature 4 */}
               <div className="bg-white p-6 rounded-2xl shadow-card flex flex-col items-center text-center animate-fade-in" style={{ animationDelay: "0.4s" }}>
                 <div className="w-12 h-12 rounded-full bg-primary/10 text-primary flex items-center justify-center mb-5">
                   <Leaf size={24} />
@@ -123,7 +113,6 @@ const Index = ({ user }: IndexProps) => {
           </div>
         </section>
         
-        {/* CTA Section */}
         <section className="py-20 bg-primary text-primary-foreground">
           <div className="container-custom">
             <div className="max-w-3xl mx-auto text-center">
@@ -148,10 +137,8 @@ const Index = ({ user }: IndexProps) => {
       
       <Footer />
       
-      {/* Cart Drawer */}
       <CartDrawer isOpen={isCartOpen} onClose={() => setIsCartOpen(false)} />
       
-      {/* Auth Modal */}
       <AuthModal isOpen={isAuthOpen} onClose={() => setIsAuthOpen(false)} />
     </div>
   );
