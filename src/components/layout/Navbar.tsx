@@ -1,0 +1,187 @@
+
+import React, { useState, useEffect } from 'react';
+import { Link, useLocation } from 'react-router-dom';
+import { ShoppingCart, Search, User, Heart, Menu, X } from 'lucide-react';
+import { cn } from '@/lib/utils';
+
+const Navbar = () => {
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [isSearchOpen, setIsSearchOpen] = useState(false);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const location = useLocation();
+  
+  // Handle scroll effect
+  useEffect(() => {
+    const handleScroll = () => {
+      setIsScrolled(window.scrollY > 20);
+    };
+    
+    window.addEventListener('scroll', handleScroll);
+    return () => window.removeEventListener('scroll', handleScroll);
+  }, []);
+  
+  // Handle route change - close mobile menu
+  useEffect(() => {
+    setIsMobileMenuOpen(false);
+  }, [location.pathname]);
+  
+  const navLinks = [
+    { name: 'Home', path: '/' },
+    { name: 'Products', path: '/products' },
+    { name: 'Collections', path: '/collections' },
+    { name: 'About', path: '/about' }
+  ];
+  
+  return (
+    <header 
+      className={cn(
+        'fixed top-0 left-0 right-0 z-50 transition-all duration-300 ease-apple',
+        isScrolled 
+          ? 'bg-white/80 backdrop-blur-lg border-b border-border shadow-soft py-3' 
+          : 'bg-transparent py-5'
+      )}
+    >
+      <div className="container-custom flex items-center justify-between">
+        {/* Logo */}
+        <Link 
+          to="/" 
+          className="font-display text-xl font-medium relative z-10"
+        >
+          <span className="chip mr-2">Cherish</span>
+          <span>Commerce</span>
+        </Link>
+        
+        {/* Desktop Navigation */}
+        <nav className="hidden md:flex items-center space-x-8">
+          {navLinks.map((link) => (
+            <Link
+              key={link.path}
+              to={link.path}
+              className={cn(
+                "text-sm font-medium transition-colors hover:text-black",
+                location.pathname === link.path 
+                  ? "text-black" 
+                  : "text-muted-foreground"
+              )}
+            >
+              {link.name}
+            </Link>
+          ))}
+        </nav>
+        
+        {/* Desktop Icons */}
+        <div className="hidden md:flex items-center space-x-6">
+          <button 
+            onClick={() => setIsSearchOpen(!isSearchOpen)}
+            className="button-hover text-muted-foreground hover:text-foreground"
+            aria-label="Search"
+          >
+            <Search size={20} />
+          </button>
+          <Link 
+            to="/wishlist" 
+            className="button-hover text-muted-foreground hover:text-foreground"
+            aria-label="Wishlist"
+          >
+            <Heart size={20} />
+          </Link>
+          <Link 
+            to="/account" 
+            className="button-hover text-muted-foreground hover:text-foreground"
+            aria-label="Account"
+          >
+            <User size={20} />
+          </Link>
+          <button 
+            onClick={() => console.log('Open cart')}
+            className="button-hover relative text-foreground"
+            aria-label="Cart"
+          >
+            <ShoppingCart size={20} />
+            <span className="absolute -top-2 -right-2 bg-primary text-primary-foreground text-xs w-5 h-5 flex items-center justify-center rounded-full">
+              0
+            </span>
+          </button>
+        </div>
+        
+        {/* Mobile Menu Button */}
+        <button 
+          onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+          className="md:hidden button-hover"
+          aria-label={isMobileMenuOpen ? "Close menu" : "Open menu"}
+        >
+          {isMobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
+        </button>
+        
+        {/* Mobile Menu */}
+        <div 
+          className={cn(
+            "fixed inset-0 bg-white z-40 flex flex-col transition-transform duration-300 ease-apple pt-20 px-6",
+            isMobileMenuOpen ? "translate-x-0" : "translate-x-full"
+          )}
+        >
+          <nav className="flex flex-col space-y-6 mt-8">
+            {navLinks.map((link) => (
+              <Link
+                key={link.path}
+                to={link.path}
+                className="text-xl font-medium"
+              >
+                {link.name}
+              </Link>
+            ))}
+          </nav>
+          
+          <div className="flex items-center space-x-8 mt-8">
+            <Link to="/wishlist" className="flex items-center">
+              <Heart size={20} className="mr-2" />
+              <span>Wishlist</span>
+            </Link>
+            <Link to="/account" className="flex items-center">
+              <User size={20} className="mr-2" />
+              <span>Account</span>
+            </Link>
+          </div>
+          
+          <button 
+            onClick={() => console.log('Open cart')}
+            className="mt-8 w-full py-3 bg-primary text-primary-foreground rounded-full flex items-center justify-center"
+          >
+            <ShoppingCart size={20} className="mr-2" />
+            <span>View Cart (0)</span>
+          </button>
+        </div>
+        
+        {/* Search Overlay */}
+        <div 
+          className={cn(
+            "fixed inset-0 bg-white/95 backdrop-blur-md z-50 flex items-center justify-center transition-opacity duration-300",
+            isSearchOpen ? "opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none"
+          )}
+        >
+          <button 
+            onClick={() => setIsSearchOpen(false)}
+            className="absolute top-6 right-6 text-muted-foreground"
+            aria-label="Close search"
+          >
+            <X size={24} />
+          </button>
+          
+          <div className="w-full max-w-2xl px-4">
+            <div className="relative">
+              <Search size={20} className="absolute left-4 top-1/2 -translate-y-1/2 text-muted-foreground" />
+              <input 
+                type="text" 
+                placeholder="Search products..." 
+                className="w-full bg-secondary h-14 pl-12 pr-4 rounded-full focus:outline-none focus:ring-1 focus:ring-primary/20"
+                autoFocus={isSearchOpen}
+              />
+            </div>
+          </div>
+        </div>
+      </div>
+    </header>
+  );
+};
+
+export default Navbar;
