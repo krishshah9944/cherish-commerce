@@ -1,62 +1,52 @@
 
-import React from 'react';
+import React, { useState } from 'react';
 import { X, Trash2, Plus, Minus, ShoppingBag } from 'lucide-react';
 import { cn } from '@/lib/utils';
-import Button from '../ui/Button';
-
-interface CartItem {
-  id: number;
-  title: string;
-  price: number;
-  image: string;
-  quantity: number;
-}
+import Button from '@/components/ui/button';
+import { useCart } from '@/contexts/CartContext';
+import { toast } from 'sonner';
+import { supabase } from '@/lib/supabase';
 
 interface CartDrawerProps {
   isOpen: boolean;
   onClose: () => void;
 }
 
-// Sample cart data
-const sampleCartItems: CartItem[] = [
-  {
-    id: 1,
-    title: 'Minimalist Wooden Chair',
-    price: 249.99,
-    image: 'https://images.unsplash.com/photo-1592078615290-033ee584e267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
-    quantity: 1
-  },
-  {
-    id: 2,
-    title: 'Natural Cotton Throw Pillow',
-    price: 39.99,
-    image: 'https://images.unsplash.com/photo-1579656381439-47fdad71406e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
-    quantity: 2
-  }
-];
-
 const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
-  const [cartItems, setCartItems] = React.useState<CartItem[]>(sampleCartItems);
+  const { items, removeFromCart, updateQuantity, subtotal, shipping, total } = useCart();
+  const [isCheckingOut, setIsCheckingOut] = useState(false);
   
-  // Calculate cart totals
-  const subtotal = cartItems.reduce((total, item) => total + (item.price * item.quantity), 0);
-  const shipping = subtotal > 100 ? 0 : 10;
-  const total = subtotal + shipping;
-  
-  // Update quantity
-  const updateQuantity = (id: number, change: number) => {
-    setCartItems(prev => 
-      prev.map(item => 
-        item.id === id 
-          ? { ...item, quantity: Math.max(1, item.quantity + change) } 
-          : item
-      )
-    );
-  };
-  
-  // Remove item
-  const removeItem = (id: number) => {
-    setCartItems(prev => prev.filter(item => item.id !== id));
+  const handleCheckout = async () => {
+    if (items.length === 0) {
+      toast.error('Your cart is empty');
+      return;
+    }
+    
+    setIsCheckingOut(true);
+    
+    try {
+      const { data, error } = await supabase.functions.invoke('create-checkout-session', {
+        body: {
+          items,
+          returnUrl: window.location.origin,
+        },
+      });
+      
+      if (error) {
+        throw new Error(error.message);
+      }
+      
+      if (data?.url) {
+        window.location.href = data.url;
+      } else {
+        throw new Error('No checkout URL returned');
+      }
+    } catch (error) {
+      console.error('Checkout error:', error);
+      toast.error('Failed to create checkout session');
+    } finally {
+      setIsCheckingOut(false);
+    }
   };
   
   return (
@@ -79,7 +69,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
       >
         {/* Header */}
         <div className="p-4 border-b border-border flex items-center justify-between">
-          <h2 className="font-medium">Your Cart {cartItems.length > 0 && `(${cartItems.length})`}</h2>
+          <h2 className="font-medium">Your Cart {items.length > 0 && `(${items.length})`}</h2>
           <button 
             onClick={onClose}
             className="w-8 h-8 flex items-center justify-center rounded-full text-muted-foreground hover:text-foreground hover:bg-secondary transition-colors"
@@ -91,11 +81,11 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
         
         {/* Cart content */}
         <div className="flex flex-col h-[calc(100%-8rem)]">
-          {cartItems.length > 0 ? (
+          {items.length > 0 ? (
             <>
               {/* Items */}
               <div className="flex-1 overflow-y-auto p-4 space-y-4">
-                {cartItems.map(item => (
+                {items.map(item => (
                   <div key={item.id} className="flex gap-4 py-3 border-b border-border animate-fade-in">
                     {/* Product image */}
                     <div className="w-20 h-20 rounded-lg overflow-hidden bg-secondary flex-shrink-0">
@@ -110,7 +100,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                       {/* Quantity controls */}
                       <div className="mt-2 flex items-center">
                         <button 
-                          onClick={() => updateQuantity(item.id, -1)}
+                          onClick={() => updateQuantity(item.id, item.quantity - 1)}
                           className="w-6 h-6 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:border-foreground transition-colors"
                           disabled={item.quantity <= 1}
                           aria-label="Decrease quantity"
@@ -121,7 +111,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                           {item.quantity}
                         </span>
                         <button 
-                          onClick={() => updateQuantity(item.id, 1)}
+                          onClick={() => updateQuantity(item.id, item.quantity + 1)}
                           className="w-6 h-6 rounded-full border border-border flex items-center justify-center text-muted-foreground hover:border-foreground transition-colors"
                           aria-label="Increase quantity"
                         >
@@ -132,7 +122,7 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                     
                     {/* Remove button */}
                     <button 
-                      onClick={() => removeItem(item.id)}
+                      onClick={() => removeFromCart(item.id)}
                       className="text-muted-foreground hover:text-destructive transition-colors"
                       aria-label="Remove item"
                     >
@@ -160,10 +150,13 @@ const CartDrawer = ({ isOpen, onClose }: CartDrawerProps) => {
                 </div>
                 
                 <Button 
-                  fullWidth 
+                  onClick={handleCheckout}
+                  className="w-full"
                   size="lg"
-                  iconLeft={<ShoppingBag size={18} />}
+                  disabled={isCheckingOut || items.length === 0}
+                  isLoading={isCheckingOut}
                 >
+                  {!isCheckingOut && <ShoppingBag size={18} className="mr-2" />}
                   Checkout
                 </Button>
               </div>

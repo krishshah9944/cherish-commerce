@@ -3,6 +3,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { Heart, ShoppingCart, Leaf } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { useCart } from '@/contexts/CartContext';
 
 interface ProductProps {
   product: {
@@ -13,12 +14,19 @@ interface ProductProps {
     category: string;
     isEco?: boolean;
     rating?: number;
+    description?: string;
   };
 }
 
 const ProductCard = ({ product }: ProductProps) => {
   const [isHovered, setIsHovered] = useState(false);
   const [isWishlisted, setIsWishlisted] = useState(false);
+  const { addToCart } = useCart();
+  
+  const handleAddToCart = (e: React.MouseEvent) => {
+    e.preventDefault();
+    addToCart(product);
+  };
   
   return (
     <div 
@@ -59,10 +67,7 @@ const ProductCard = ({ product }: ProductProps) => {
         >
           <button 
             className="w-full py-2.5 bg-white text-foreground rounded-lg flex items-center justify-center gap-2 font-medium shadow-soft hover:bg-primary hover:text-primary-foreground transition-colors button-hover"
-            onClick={(e) => {
-              e.preventDefault();
-              console.log('Add to cart:', product.title);
-            }}
+            onClick={handleAddToCart}
           >
             <ShoppingCart size={16} /> Add to Cart
           </button>
