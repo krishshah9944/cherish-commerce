@@ -23,7 +23,7 @@ const features = [
   {
     icon: <Leaf className="w-6 h-6" />,
     title: 'Eco-Conscious',
-    description: 'We're committed to sustainability and promoting eco-friendly products.'
+    description: "We're committed to sustainability and promoting eco-friendly products."
   }
 ];
 
