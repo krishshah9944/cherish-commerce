@@ -3,6 +3,8 @@ import React, { useState } from 'react';
 import { X, Mail, Lock, Eye, EyeOff, User } from 'lucide-react';
 import { cn } from '@/lib/utils';
 import Button from '../ui/Button';
+import { supabase } from '@/lib/supabase';
+import { useToast } from '@/hooks/use-toast';
 
 interface AuthModalProps {
   isOpen: boolean;
@@ -17,21 +19,68 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
   const [name, setName] = useState('');
+  const [isLoading, setIsLoading] = useState(false);
+  const { toast } = useToast();
   
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    setIsLoading(true);
     
-    // Add authentication logic
-    console.log('Auth submission:', { mode, email, password, name });
-    
-    // Simulate success and close modal
-    setTimeout(() => {
-      onClose();
-      // Reset form
-      setEmail('');
-      setPassword('');
-      setName('');
-    }, 1000);
+    try {
+      if (mode === 'login') {
+        const { error } = await supabase.auth.signInWithPassword({
+          email,
+          password,
+        });
+        
+        if (error) throw error;
+        
+        toast({
+          title: "Success!",
+          description: "You've been signed in successfully.",
+        });
+        
+        onClose();
+      } else if (mode === 'register') {
+        const { error } = await supabase.auth.signUp({
+          email,
+          password,
+          options: {
+            data: {
+              full_name: name,
+            }
+          }
+        });
+        
+        if (error) throw error;
+        
+        toast({
+          title: "Account created!",
+          description: "Please check your email to confirm your account.",
+        });
+        
+        onClose();
+      } else if (mode === 'forgot-password') {
+        const { error } = await supabase.auth.resetPasswordForEmail(email);
+        
+        if (error) throw error;
+        
+        toast({
+          title: "Reset link sent",
+          description: "Check your email for a password reset link.",
+        });
+        
+        onClose();
+      }
+    } catch (error: any) {
+      toast({
+        title: "Error",
+        description: error.message || "An unexpected error occurred",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
   
   return (
@@ -163,6 +212,7 @@ const AuthModal = ({ isOpen, onClose }: AuthModalProps) => {
               fullWidth
               size="lg"
               className="mt-6"
+              isLoading={isLoading}
             >
               {mode === 'login' ? 'Sign In' : mode === 'register' ? 'Create Account' : 'Send Reset Link'}
             </Button>

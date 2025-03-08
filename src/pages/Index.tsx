@@ -9,7 +9,11 @@ import AuthModal from '../components/auth/AuthModal';
 import { ShoppingBag, Star, Users, Leaf, ArrowRight } from 'lucide-react';
 import Button from '../components/ui/Button';
 
-const Index = () => {
+interface IndexProps {
+  user?: any;
+}
+
+const Index = ({ user }: IndexProps) => {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [isAuthOpen, setIsAuthOpen] = useState(false);
   
@@ -33,7 +37,9 @@ const Index = () => {
   // Open auth modal when clicking account icon
   React.useEffect(() => {
     const handleAccountClick = () => {
-      setIsAuthOpen(true);
+      if (!user) {
+        setIsAuthOpen(true);
+      }
     };
     
     document.querySelectorAll('[aria-label="Account"]').forEach(el => {
@@ -45,7 +51,7 @@ const Index = () => {
         el.removeEventListener('click', handleAccountClick);
       });
     };
-  }, []);
+  }, [user]);
   
   return (
     <div className="flex flex-col min-h-screen">
@@ -131,9 +137,9 @@ const Index = () => {
                 size="lg" 
                 className="border-white text-white hover:bg-white hover:text-primary"
                 iconRight={<ArrowRight size={18} />}
-                onClick={() => setIsAuthOpen(true)}
+                onClick={() => !user && setIsAuthOpen(true)}
               >
-                Create an Account
+                {user ? 'Browse Products' : 'Create an Account'}
               </Button>
             </div>
           </div>

@@ -1,14 +1,37 @@
 
 import React, { useState, useEffect } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link, useLocation, useNavigate } from 'react-router-dom';
 import { ShoppingCart, Search, User, Heart, Menu, X } from 'lucide-react';
 import { cn } from '@/lib/utils';
+import { supabase } from '@/lib/supabase';
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [isSearchOpen, setIsSearchOpen] = useState(false);
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [user, setUser] = useState<any>(null);
   const location = useLocation();
+  const navigate = useNavigate();
+  
+  // Get user on initial load
+  useEffect(() => {
+    const getUser = async () => {
+      const { data } = await supabase.auth.getUser();
+      setUser(data.user);
+    };
+    
+    getUser();
+    
+    const { data: authListener } = supabase.auth.onAuthStateChange(
+      (event, session) => {
+        setUser(session?.user || null);
+      }
+    );
+    
+    return () => {
+      authListener.subscription.unsubscribe();
+    };
+  }, []);
   
   // Handle scroll effect
   useEffect(() => {
@@ -31,6 +54,12 @@ const Navbar = () => {
     { name: 'Collections', path: '/collections' },
     { name: 'About', path: '/about' }
   ];
+  
+  const handleAccountClick = () => {
+    if (user) {
+      navigate('/account');
+    }
+  };
   
   return (
     <header 
@@ -85,15 +114,17 @@ const Navbar = () => {
           >
             <Heart size={20} />
           </Link>
-          <Link 
-            to="/account" 
+          <button 
+            onClick={handleAccountClick}
             className="button-hover text-muted-foreground hover:text-foreground"
             aria-label="Account"
           >
             <User size={20} />
-          </Link>
+            {user && (
+              <span className="absolute -top-1 -right-1 w-2 h-2 bg-green-500 rounded-full"></span>
+            )}
+          </button>
           <button 
-            onClick={() => console.log('Open cart')}
             className="button-hover relative text-foreground"
             aria-label="Cart"
           >
@@ -137,14 +168,21 @@ const Navbar = () => {
               <Heart size={20} className="mr-2" />
               <span>Wishlist</span>
             </Link>
-            <Link to="/account" className="flex items-center">
-              <User size={20} className="mr-2" />
-              <span>Account</span>
-            </Link>
+            {user ? (
+              <Link to="/account" className="flex items-center">
+                <User size={20} className="mr-2" />
+                <span>Account</span>
+              </Link>
+            ) : (
+              <button className="flex items-center" aria-label="Account">
+                <User size={20} className="mr-2" />
+                <span>Sign In</span>
+              </button>
+            )}
           </div>
           
           <button 
-            onClick={() => console.log('Open cart')}
+            aria-label="Cart"
             className="mt-8 w-full py-3 bg-primary text-primary-foreground rounded-full flex items-center justify-center"
           >
             <ShoppingCart size={20} className="mr-2" />
