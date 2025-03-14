@@ -13,7 +13,8 @@ const featuredProducts = [
     image: 'https://images.unsplash.com/photo-1592078615290-033ee584e267?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
     category: 'Furniture',
     isEco: true,
-    rating: 4.8
+    rating: 4.8,
+    description: 'Elegant minimalist wooden chair for your modern home. Comfortable and stylish.'
   },
   {
     id: 2,
@@ -22,7 +23,8 @@ const featuredProducts = [
     image: 'https://images.unsplash.com/photo-1579656381439-47fdad71406e?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
     category: 'Home Decor',
     isEco: true,
-    rating: 4.7
+    rating: 4.7,
+    description: 'Soft, natural cotton throw pillow to add comfort and style to any space.'
   },
   {
     id: 3,
@@ -31,7 +33,8 @@ const featuredProducts = [
     image: 'https://images.unsplash.com/photo-1571489528490-146aeb745b10?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
     category: 'Kitchen',
     isEco: false,
-    rating: 4.9
+    rating: 4.9,
+    description: 'Hand-crafted ceramic pour-over coffee maker for the perfect brew every morning.'
   },
   {
     id: 4,
@@ -40,7 +43,8 @@ const featuredProducts = [
     image: 'https://images.unsplash.com/photo-1612196808214-5991979749a1?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=500&q=80',
     category: 'Home Decor',
     isEco: true,
-    rating: 4.6
+    rating: 4.6,
+    description: 'Beautifully handcrafted ceramic vase to display your favorite flowers or as a standalone piece.'
   }
 ];
 

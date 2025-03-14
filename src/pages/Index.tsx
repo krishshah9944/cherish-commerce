@@ -1,3 +1,4 @@
+
 import React, { useState } from 'react';
 import Navbar from '../components/layout/Navbar';
 import Footer from '../components/layout/Footer';
@@ -6,7 +7,7 @@ import FeaturedProducts from '../components/home/FeaturedProducts';
 import CartDrawer from '../components/cart/CartDrawer';
 import AuthModal from '../components/auth/AuthModal';
 import { ShoppingBag, Star, Users, Leaf, ArrowRight } from 'lucide-react';
-import { Button } from '../components/ui/button';
+import { Button } from '@/components/ui/button';
 
 interface IndexProps {
   user?: any;
@@ -125,10 +126,10 @@ const Index = ({ user }: IndexProps) => {
                 variant="outline" 
                 size="lg" 
                 className="border-white text-white hover:bg-white hover:text-primary"
-                iconRight={<ArrowRight size={18} />}
                 onClick={() => !user && setIsAuthOpen(true)}
               >
                 {user ? 'Browse Products' : 'Create an Account'}
+                <ArrowRight size={18} className="ml-2" />
               </Button>
             </div>
           </div>
